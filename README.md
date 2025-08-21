@@ -16,7 +16,7 @@ The core challenge of this project was to replace the "black box" of credit scor
 
 ### 📸 Screenshot
 
-![Application Screenshot](https_your_link_to_a_screenshot.png) 
+![Application Screenshot](screenshot.png) 
 *(**Note:** Please replace this link with a screenshot of your running application)*
 
 ---
