@@ -12,7 +12,7 @@ The core challenge of this project was to replace the "black box" of credit scor
 
 **You can access the live, deployed application here:**
 
-**[YOUR_DEPLOYED_APP_URL]**
+(https://explainable-credit-intelligence-ijpjs7bo6dgjftua6p8dgc.streamlit.app/)
 
 ### 📸 Screenshot
 
