@@ -1,11 +1,12 @@
-pycache/
+
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 
 venv/
 .venv/
+.venv311/
 
 .vscode/
 .idea/
-
