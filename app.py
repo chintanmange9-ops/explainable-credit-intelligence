@@ -121,10 +121,6 @@ def build_feature_frame(ticker: str, country_code: str) -> tuple[pd.DataFrame, d
     return X, meta
 
 def calculate_heuristic_score(X: pd.DataFrame) -> tuple[float, dict | None]:
-    """
-    Calculates a heuristic credit score. This is the FINAL POLISHED version,
-    calibrated for a realistic and impressive score distribution.
-    """
     if X.empty: return 0.0, None
     features = X.iloc[0]
     
