@@ -9,11 +9,10 @@ from datetime import datetime, timedelta
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from pytrends.request import TrendReq
 
-
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-
+@st.cache_data(ttl=600, show_spinner=False)
 @st.cache_data(ttl=600, show_spinner=False)
 def get_prices(ticker: str, period: str = "1y", interval: str = "1d") -> pd.DataFrame:
     try:
@@ -21,7 +20,11 @@ def get_prices(ticker: str, period: str = "1y", interval: str = "1d") -> pd.Data
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
         if df.empty:
-            raise ValueError("Empty DF")
+            st.warning(f"⚠️ Yahoo Finance failed for {ticker}, using cached demo data.")
+            cache_file_csv = os.path.join("cached_data", f"{ticker.replace('.', '_')}.csv")
+            if os.path.exists(cache_file_csv):
+                return pd.read_csv(cache_file_csv, parse_dates=["Date"], index_col="Date")
+            return pd.DataFrame()
         return df.dropna()
     except Exception:
         st.warning(f"⚠️ Yahoo Finance failed for {ticker}, using cached demo data.")
@@ -29,6 +32,7 @@ def get_prices(ticker: str, period: str = "1y", interval: str = "1d") -> pd.Data
         if os.path.exists(cache_file_csv):
             return pd.read_csv(cache_file_csv, parse_dates=["Date"], index_col="Date")
         return pd.DataFrame()
+
 
 def compute_price_features(price_df: pd.DataFrame) -> dict:
     out = {}
@@ -79,6 +83,7 @@ def get_scalar(value):
     if isinstance(value, pd.Series): return value.iloc[0] if not value.empty else np.nan
     if isinstance(value, (np.ndarray, list)): return value[0] if len(value) > 0 else np.nan
     return value
+
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def get_trends_feature(keyword: str) -> float:
@@ -212,7 +217,12 @@ with st.sidebar:
     peer = st.selectbox("Select Peer for Comparison (Optional)", peer_options)
     country = st.text_input("Country (ISO2/ISO3)", value="IN" if ".NS" in ticker else "US").strip().upper()
     st.caption("Examples: US, IN, GB, JP.")
-    run_btn = st.button("Run / Refresh")
+
+    run_btn = st.button("🔄 Refresh", help="Fetch latest data (clears cache)")
+    if run_btn:
+        st.cache_data.clear()
+        st.cache_resource.clear()
+        st.rerun()
 
 if not (run_btn or ticker):
     st.info("Select a company and click Run.")
